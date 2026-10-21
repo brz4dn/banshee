@@ -1,6 +1,6 @@
 # Banshee Toolkit
 
-A Python-based CLI toolkit with a custom shell interface for automated environment setup and device enrollment workflows.
+A Python Tool with a Clean Shell Interface for Device Unenrollment Workflows.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/AnubisSec/AnubisSec/master/img/line-white.gif" width="100%">
@@ -8,11 +8,10 @@ A Python-based CLI toolkit with a custom shell interface for automated environme
 
 ## Features
 
-* Custom framed terminal interface
-* Automated virtual environment creation
-* Dependency management for Python packages
-* ChromeOS device enrollment integration
-* Cross-platform support for Windows, macOS, and Linux
+* Clean/Simple/Modern Terminal UI
+* Built-In Installs for Python Packages
+* ChromeOS Device Unenrollment Exploit
+* Cross-Platform Support for Windows, macOS, and Linux
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/AnubisSec/AnubisSec/master/img/line-white.gif" width="100%">
@@ -43,7 +42,7 @@ python main.py
 | Option | Function |
 | :--- | :--- |
 | `[1]` | **Install Packages** — Configures environment and installs dependencies |
-| `[2]` | **Enrollment Setup** — Opens the enrollment portal and shows steps |
+| `[2]` | **Unenrollment Setup** — Opens the enrollment portal and shows steps |
 | `[3]` | **Website** — Opens the developer link in your default browser |
 | `[0]` | **Exit** — Closes the application |
 
