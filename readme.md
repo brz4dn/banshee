@@ -1,7 +1,8 @@
 # Banshee Toolkit
 
 A Python Tool with a Clean Shell Interface for Device Unenrollment Workflows.
-This Exploit Uses **ManualEscape** Chromebook Exploit. Credits To The Owners.
+
+This Exploit Uses **ManualEscape**. Credits To The Owners.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/AnubisSec/AnubisSec/master/img/line-white.gif" width="100%">
