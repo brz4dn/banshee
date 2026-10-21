@@ -2,6 +2,7 @@
 Banshee is a tool that makes *unenrollment workflows possible.*
 
 **Features**
+
 Interactive UI: Custom shell layout with *dynamic status display.*
 Automated Package Installation: Installs ***core** libraries.*
 Unenrollment Process: Uses **ManualEscape** to *unenroll the school device.*
