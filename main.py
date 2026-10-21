@@ -9,6 +9,12 @@ import subprocess
 import webbrowser
 from datetime import datetime
 
+# Import the device management backend protocol buffer module
+try:
+    import device_management_backend_pb2
+except ImportError:
+    pass
+
 VERSION = "1.00"
 DEV = "brz4dn"
 WEBSITE = "https://guns.lol/brz4dn"
@@ -96,7 +102,8 @@ def build_rows():
     menu_items = [
         "[1] Install Google Requests", 
         "[2] Device Enrollment Signup", 
-        "[3] Open Official Website", 
+        "[3] Unenroll The Device", 
+        "[4] Open Official Website", 
         "[0] Exit Toolkit"
     ]
     for item in menu_items:
@@ -190,6 +197,84 @@ def device_enrollment_signup():
     say(paint(" 5. Enter the Oauth Code in here and Continue", "97"))
     say(paint("==================================================", "97"))
 
+def unenroll_device():
+    say(paint("\n[*] Running Unenroll...", "97"))
+    try:
+        import requests
+    except ImportError as e:
+        say(paint(f"[-] Missing Package ({e}). Use Option [ 1 ] First.", "97"))
+        return
+    try:
+        import device_management_backend_pb2 as pb
+    except ImportError as e:
+        say(paint(f"[-] Missing Protocol Buffer Module ({e}).", "97"))
+        return
+    
+    try:
+        serial_number = input(paint("Serial Number: ")).strip()
+        oauth_code = input(paint("Oauth Code: ")).strip()
+    except (EOFError, KeyboardInterrupt):
+        say(paint("\n[-] Unenroll Canceled.", "97"))
+        return
+        
+    say(paint("[*] Contacting Google...", "97"))
+    try:
+        r = requests.post("https://www.googleapis.com/oauth2/v4/token", data={
+            "code": oauth_code, "client_id": OAUTH_CLIENT_ID,
+            "client_secret": OAUTH_CLIENT_SECRET,
+            "grant_type": "authorization_code"}, timeout=15)
+        r.raise_for_status()
+        refresh_token = r.json()["refresh_token"]
+        r = requests.post("https://www.googleapis.com/oauth2/v4/token", data={
+            "client_id": OAUTH_CLIENT_ID, "client_secret": OAUTH_CLIENT_SECRET,
+            "grant_type": "refresh_token", "refresh_token": refresh_token,
+            "scope": "https://www.googleapis.com/auth/chromeosdevicemanagement "
+                     "https://www.googleapis.com/auth/userinfo.email"}, timeout=15)
+        r.raise_for_status()
+        oauth_token = r.json()["access_token"]
+        device_id = str(uuid.uuid4())
+
+        reg = pb.DeviceRegisterRequest()
+        reg.type = pb.DeviceRegisterRequest.DEVICE
+        reg.machine_id = serial_number
+        req = pb.DeviceManagementRequest()
+        req.register_request.CopyFrom(reg)
+
+        r = requests.post(
+            f"https://m.google.com/devicemanagement/data/api?devicetype=2"
+            f"&apptype=Chrome&request=register&deviceid={device_id}"
+            f"&oauth_token={oauth_token}",
+            headers={"Content-Type": "application/protobuf"},
+            data=req.SerializeToString(), timeout=15)
+        data = pb.DeviceManagementResponse()
+        data.ParseFromString(r.content)
+        if data.error_message:
+            say(paint(f"[-] Registration Error: {data.error_message}", "97"))
+            return
+        dmtoken = data.register_response.device_management_token
+
+        pf = pb.PolicyFetchRequest()
+        pf.policy_type = "google/chromeos/device"
+        sk = pb.DeviceStateKeyUpdateRequest()
+        for _ in range(5):
+            sk.server_backed_state_keys.append(os.urandom(32))
+        req = pb.DeviceManagementRequest()
+        req.policy_request.requests.append(pf)
+        req.device_state_key_update_request.CopyFrom(sk)
+
+        r = requests.post(
+            f"https://m.google.com/devicemanagement/data/api?retry=false"
+            f"&apptype=Chrome&deviceid={device_id}&devicetype=2&request=policy",
+            headers={"Authorization": f"GoogleDMToken token={dmtoken}",
+                     "Content-Type": "application/protobuf"},
+            data=req.SerializeToString(), timeout=15)
+        data = pb.DeviceManagementResponse()
+        data.ParseFromString(r.content)
+        say(paint("[+] Response:", "97"))
+        print(data)
+    except Exception as e:
+        say(paint(f"[-] Error: {e}", "97"))
+
 def open_website():
     say(paint(f"\n[*] Launching browser to {WEBSITE} ...", "97"))
     webbrowser.open(WEBSITE)
@@ -206,6 +291,8 @@ def main():
         elif choice == "2":
             device_enrollment_signup()
         elif choice == "3":
+            unenroll_device()
+        elif choice == "4":
             open_website()
         elif choice == "0":
             say(paint("\nExiting Banshee...", "97"))
