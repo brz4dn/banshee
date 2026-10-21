@@ -1,5 +1,5 @@
-Banshee
+**Banshee**
 
-A Tool That Unenrolls A Managed Chromebook.
+A Tool That *Unenrolls* A **Managed Chromebook.**
 
-We Made This Process More Modern And Built Into An App/
+We Made This Process More *Modern* And **Built Into An App.**
