@@ -44,8 +44,9 @@ python main.py
 | Option | Function |
 | :--- | :--- |
 | `[1]` | **Install Packages** — Configures environment and installs dependencies |
-| `[2]` | **Unenrollment Setup** — Opens the enrollment portal and shows steps |
-| `[3]` | **Website** — Opens the developer link in your default browser |
+| `[2]` | **Device Management Signin** — Opens the enrollment portal and shows steps |
+| `[3]` | **Unenroll The Device**** — Enter the serial and oauth and it will unenroll your device |
+| `[4]` | **Our Official Website** — Opens the developer link in your default browser |
 | `[0]` | **Exit** — Closes the application |
 
 <p align="center">
